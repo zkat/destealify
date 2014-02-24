@@ -31,7 +31,7 @@ function convertStealModule(text) {
 
   eval(text);
   var source = cb.toString();
-  var requires = generateRequires(deps);
+  var requires = generateRequires(deps, stealconfig);
   var body = "module.exports = ("+source+")("+requires.join(",")+");";
   return body;
 
@@ -49,7 +49,7 @@ function convertStealModule(text) {
   }
 }
 
-function generateRequires(deps) {
+function generateRequires(deps, config) {
   var dependencies = [];
   var dep;
   return deps.map(function(dep) {
@@ -57,8 +57,20 @@ function generateRequires(deps) {
     if (!path.extname(dep) && dep.indexOf("./") !== 0) {
       dep += "/"+path.basename(dep)+".js";
     }
+    dep = mapDependency(dep, config.map || {});
+    dep = pathDependency(dep, config.paths || {});
     return "require('"+dep+"')";
   });
+}
+
+function mapDependency(dep, map) {
+  // TODO - support other map options. * is good enough for now, imo
+  return (map["*"] && map["*"][dep]) || dep;
+}
+
+function pathDependency(dep, paths) {
+  var path = paths[dep];
+  return paths[dep] || dep;
 }
 
 function isStealModule(text) {
@@ -76,13 +88,18 @@ function isStealModule(text) {
 
 function loadStealConfig() {
   var oldSteal = global.steal,
-      config;
+      config,
+      module;
   global.steal = {
     config: function(obj) {
       config = obj;
     }
   };
-  var module = require(process.cwd()+"/stealconfig.js");
+  try {
+    module = require(process.cwd()+"/stealconfig.js");
+  } catch(e) {
+    module = {config:{}};
+  }
   if (!module.config) { module.config = config; }
   global.steal = oldSteal;
   return module.config;
