@@ -33,6 +33,9 @@ function convertStealModule(text) {
         deps.push(dep);
       }
     });
+    return {
+      then: function() { cb = null; return steal.apply(this, arguments); }
+    };
   }
 }
 
