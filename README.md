@@ -47,6 +47,19 @@ to all modules in the package as it builds a bundle.
 }
 ```
 
+### Issues
+
+#### Modules with absolute paths
+
+Most StealJS modules rely on absolute pathing. Because `destealify` does not
+respect `stealconfig.js`, you may need a workaround until it does (or until a
+different configuration solution is provided). Since `destealify` looks in
+`node_modules/`, the solution is as simple as symlinking your absolute path root
+to something in that directory. For example, you can ensure that
+`steal("can/route/pushstate.js", function() {...});` works by symlinking your
+canjs directory to `node_modules/`, or simply placing the library in that
+directory, with the name `can`.
+
 ### License
 
 `destealify` is a public domain work, dedicated using
