@@ -16,7 +16,8 @@
     "commonjs",
     "browserify",
     "canjs",
-    "transformer"
+    "transformer",
+    "browserify-transform"
   ],
   "author": "Kat Marchán <kzm@sykosomatic.org>",
   "licenses": [
