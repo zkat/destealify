@@ -44,7 +44,7 @@ function generateRequires(deps) {
   var dep;
   return deps.map(function(dep) {
     // Steal does "foo/bar" -> "foo/bar/bar.js", so this might mess with things.
-    if (!/\.js$/.test(dep) && dep.indexOf("./") !== 0) {
+    if (!path.extname(dep) && dep.indexOf("./") !== 0) {
       dep += "/"+path.basename(dep)+".js";
     }
     return "require('"+dep+"')";
