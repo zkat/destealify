@@ -1,0 +1,35 @@
+{
+  "name": "destealify",
+  "version": "0.0.0",
+  "description": "Allows StealJS module dependencies when using Browserify",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zkat/destealify.git"
+  },
+  "keywords": [
+    "steal",
+    "stealjs",
+    "commonjs",
+    "browserify",
+    "canjs",
+    "transformer"
+  ],
+  "author": "Kat Marchán <kzm@sykosomatic.org>",
+  "licenses": [
+    {
+      "type": "CC0",
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/zkat/destealify/issues"
+  },
+  "dependencies": {
+    "through": "~2.3.4",
+    "tern": "~0.5.0"
+  }
+}
