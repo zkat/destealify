@@ -15,16 +15,15 @@ module.exports = function(file) {
 };
 
 function convertStealModule(text) {
-  var names = [],
-      deps = [],
+  var deps = [],
       cb;
 
   eval(text);
   var source = cb.toString();
-  // From http://stackoverflow.com/a/3180012
-  var body = source.substring(source.indexOf("{")+1, source.lastIndexOf("}"));
+  var requires = generateRequires(deps);
+  var body = "module.exports = ("+source+")("+requires.join(",")+");";
 
-  return generateRequires(names, deps) + body;
+  return body;
 
   function steal() {
     cb = typeof arguments[arguments.length-1] === "function" &&
@@ -34,32 +33,19 @@ function convertStealModule(text) {
         deps.push(dep);
       }
     });
-    if (cb) {
-        names = getParamNames(cb);
-    }
   }
 }
 
-function generateRequires(names, deps) {
-  var requires = "";
+function generateRequires(deps) {
   var dependencies = [];
   var dep;
-  for (var i = 0; i < names.length || i < deps.length; i++) {
-    if (names[i]) {
-      requires += "var "+names[i]+" = ";
-    }
-    dep = deps[i];
+  return deps.map(function(dep) {
     // Steal does "foo/bar" -> "foo/bar/bar.js", so this might mess with things.
     if (!/\.js$/.test(dep) && dep.indexOf("./") !== 0) {
       dep += "/"+path.basename(dep)+".js";
     }
-    requires += dep ?
-      "require('"+dep+"');\n" :
-      names[i] ?
-      "undefined;\n" :
-      "";
-  }
-  return requires;
+    return "require('"+dep+"')";
+  });
 }
 
 function isStealModule(text) {
