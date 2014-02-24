@@ -27,6 +27,7 @@ function convertStealModule(text) {
       return stealconfig;
     }
   };
+  steal.isBuilding = true;
 
   eval(text);
   var source = cb.toString();
@@ -81,7 +82,6 @@ function loadStealConfig() {
       config = obj;
     }
   };
-
   var module = require(process.cwd()+"/stealconfig.js");
   if (!module.config) { module.config = config; }
   global.steal = oldSteal;
