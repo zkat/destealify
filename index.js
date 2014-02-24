@@ -16,13 +16,22 @@ module.exports = function(file) {
 
 function convertStealModule(text) {
   var deps = [],
+      stealconfig = loadStealConfig(),
       cb;
+
+  global.window = global.window || global;
+  steal.config = function(name) {
+    if (name) {
+      return stealconfig[name];
+    } else {
+      return stealconfig;
+    }
+  };
 
   eval(text);
   var source = cb.toString();
   var requires = generateRequires(deps);
   var body = "module.exports = ("+source+")("+requires.join(",")+");";
-
   return body;
 
   function steal() {
@@ -62,6 +71,21 @@ function isStealModule(text) {
     });
   });
   return stealFound;
+}
+
+function loadStealConfig() {
+  var oldSteal = global.steal,
+      config;
+  global.steal = {
+    config: function(obj) {
+      config = obj;
+    }
+  };
+
+  var module = require(process.cwd()+"/stealconfig.js");
+  if (!module.config) { module.config = config; }
+  global.steal = oldSteal;
+  return module.config;
 }
 
 // From http://stackoverflow.com/a/9924463
