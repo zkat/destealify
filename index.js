@@ -58,7 +58,7 @@ function generateRequires(deps, config) {
       dep += "/"+path.basename(dep)+".js";
     }
     dep = mapDependency(dep, config.map || {});
-    dep = pathDependency(dep, config.paths || {});
+    dep = pathDependency(dep, config.paths || {}, config.stealConfigLocation);
     return "require('"+dep+"')";
   });
 }
@@ -68,11 +68,9 @@ function mapDependency(dep, map) {
   return (map["*"] && map["*"][dep]) || dep;
 }
 
-function pathDependency(dep, paths) {
-  // TODO - translate paths according to where the stealconfig was that
-  //        converted them.
-  var path = paths[dep];
-  return paths[dep] || dep;
+function pathDependency(dep, paths, configLoc) {
+  var depPath = paths[dep];
+  return depPath ? path.resolve(configLoc, depPath) : dep;
 }
 
 function isStealModule(text) {
@@ -109,6 +107,7 @@ function loadStealConfig(file) {
   }
   if (!module.config) { module.config = config; }
   global.steal = oldSteal;
+  module.config.stealConfigLocation = curPath;
   return module.config;
 }
 
