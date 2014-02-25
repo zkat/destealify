@@ -47,18 +47,44 @@ to all modules in the package as it builds a bundle.
 }
 ```
 
-### Issues
+### stealconfig.js
 
-#### Modules with absolute paths
+Most StealJS modules rely on absolute pathing. There are two ways around this:
 
-Most StealJS modules rely on absolute pathing. Because `destealify` does not
-respect `stealconfig.js`, you may need a workaround until it does (or until a
-different configuration solution is provided). Since `destealify` looks in
-`node_modules/`, the solution is as simple as symlinking your absolute path root
-to something in that directory. For example, you can ensure that
-`steal("can/route/pushstate.js", function() {...});` works by symlinking your
-canjs directory to `node_modules/`, or simply placing the library in that
-directory, with the name `can`.
+0. use symlinks in `node_modules/` to arrange your paths such that `require()`
+works as expected for the paths in the steal module.
+0. Use a `stealconfig.js` file in a parent directory of your module and use the
+`map` and `paths` options, which are handled by this transform, to map module
+names as needed.
+
+For example, if you have a module that looks like:
+
+```js
+steal("frob/this", function() {
+});
+```
+
+`destealify` will first translate that dependency to `"frob/this/this.js"`,
+following StealJS conventions.
+
+If your `this.js` library is located in
+`./bower_components/frobjs/this/index.js`, you can write a stealconfig.js in
+your project's root that looks like:
+
+```js
+steal.config({
+  map: {
+    "*": {
+      "frob/this/this.js": "thisjs"
+    }
+  },
+  paths: {
+    "thisjs": "bower_components/frobjs/this"
+  }
+});
+```
+
+and everything will be taken care of for you.
 
 ### License
 
