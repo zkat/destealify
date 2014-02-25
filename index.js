@@ -1,5 +1,5 @@
 var through = require("through"),
-    infer = require("./node_modules/tern/lib/infer"),
+    infer = require("tern/lib/infer"),
     path = require("path");
 
 module.exports = function(file) {
@@ -9,14 +9,14 @@ module.exports = function(file) {
 
   function write(buf) { data += buf; }
   function end() {
-    stream.queue(isStealModule(data) ? convertStealModule(data) : data);
+    stream.queue(isStealModule(data) ? convertStealModule(file, data) : data);
     stream.queue(null);
   }
 };
 
-function convertStealModule(text) {
+function convertStealModule(file, text) {
   var deps = [],
-      stealconfig = loadStealConfig(),
+      stealconfig = loadStealConfig(file),
       cb;
 
   global.window = global.window || global;
@@ -69,6 +69,8 @@ function mapDependency(dep, map) {
 }
 
 function pathDependency(dep, paths) {
+  // TODO - translate paths according to where the stealconfig was that
+  //        converted them.
   var path = paths[dep];
   return paths[dep] || dep;
 }
@@ -86,19 +88,24 @@ function isStealModule(text) {
   return stealFound;
 }
 
-function loadStealConfig() {
+function loadStealConfig(file) {
   var oldSteal = global.steal,
       config,
+      curPath = file,
       module;
   global.steal = {
     config: function(obj) {
       config = obj;
     }
   };
-  try {
-    module = require(process.cwd()+"/stealconfig.js");
-  } catch(e) {
-    module = {config:{}};
+  while (!module) {
+    curPath = path.dirname(curPath);
+    try {
+      module = require(curPath+"/stealconfig.js");
+    } catch(e) {}
+    if (!curPath || curPath === "/") {
+      module = module || {config:{}};
+    }
   }
   if (!module.config) { module.config = config; }
   global.steal = oldSteal;
