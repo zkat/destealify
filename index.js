@@ -17,7 +17,7 @@ module.exports = function(file) {
 function convertStealModule(file, text) {
   var deps = [],
       stealconfig = loadStealConfig(file),
-      cb;
+      invocations = [];
 
   global.window = global.window || global;
   steal.config = function(name) {
@@ -30,21 +30,21 @@ function convertStealModule(file, text) {
   steal.isBuilding = true;
 
   eval(text);
-  var source = cb.toString();
-  var requires = generateRequires(deps, stealconfig);
-  var body = "module.exports = ("+source+")("+requires.join(",")+");";
-  return body;
+  return invocations.reduce(function(acc, invocation) {
+    var source = invocation.callback.toString(),
+        requires = generateRequires(invocation.deps, stealconfig);
+    return acc+",("+source+")("+requires.join(",")+")";
+  }, "module.exports = {}")+";";
 
   function steal() {
-    cb = typeof arguments[arguments.length-1] === "function" &&
-      arguments[arguments.length-1];
-    [].forEach.call(arguments, function(dep, i, args) {
-      if (cb && i < args.length-1) {
-        deps.push(dep);
-      }
+    var cb = (typeof arguments[arguments.length-1] === "function" &&
+              arguments[arguments.length-1]);
+    invocations.push({
+      callback: cb || function(){},
+      deps: cb ? [].slice.call(arguments, 0, arguments.length-1) : [].slice.call(arguments)
     });
     return {
-      then: function() { cb = null; return steal.apply(this, arguments); }
+      then: function() { return steal.apply(this, arguments); }
     };
   }
 }
