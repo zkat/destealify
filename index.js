@@ -2,14 +2,27 @@ var through = require("through"),
     infer = require("tern/lib/infer"),
     path = require("path");
 
-module.exports = function(file) {
+module.exports = function() {
+  return (this.webpack ? webpack : browserify).apply(this, arguments);
+};
+
+function applyTransform(file, data) {
+  return isStealModule(data) ? convertStealModule(file, data) : data;
+}
+
+function webpack(content) {
+  this.cacheable && this.cacheable();
+  return applyTransform(this.resourcePath, content);
+}
+
+function browserify(file) {
   var data = "",
       stream = through(write, end);
   return stream;
 
   function write(buf) { data += buf; }
   function end() {
-    stream.queue(isStealModule(data) ? convertStealModule(file, data) : data);
+    stream.queue(applyTransform(file, data));
     stream.queue(null);
   }
 };
