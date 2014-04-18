@@ -1,0 +1,18 @@
+{
+  "name": "canjs-webpack",
+  "version": "0.0.0",
+  "description": "example repo using canjs, built with webpack",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "CC0",
+  "dependencies": {
+    "canjs": "^2.0.7-2"
+  },
+  "devDependencies": {
+    "destealify": "0.0.8",
+    "webpack": "^1.1.7"
+  }
+}

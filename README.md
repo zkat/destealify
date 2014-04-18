@@ -5,6 +5,9 @@
 [StealJS](https://github.com/bitovi/steal) modules with
 [Node.js](http://nodejs.org/)-style CommonJS modules.
 
+It also supports [webpack](https://webpack.github.io). See
+`examples/canjs-webpack`.
+
 # Quickstart
 
 ### Install
