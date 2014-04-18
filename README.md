@@ -50,6 +50,17 @@ to all modules in the package as it builds a bundle.
 }
 ```
 
+### CanJS
+
+Unfortunately, there's no obvious way to use `browserify` directly with the
+`steal` version of [CanJS](http://canjs.com). This is because `browserify` does
+not recursively transform dependencies, and expects them to do their own
+transformation, or use the `browserify` field -- which would then need further
+configuration for the quirks of how the `CanJS` repo works.
+
+Instead, use [webpack](https://webpack.github.io), which has a similar
+featureset to `browserify`. See `examples/canjs-webpack` for details.
+
 ### stealconfig.js
 
 Most StealJS modules rely on absolute pathing. There are two ways around this:
