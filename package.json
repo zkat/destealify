@@ -1,6 +1,6 @@
 {
   "name": "destealify",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Allows StealJS module dependencies when using Browserify",
   "main": "index.js",
   "scripts": {
