@@ -46,8 +46,8 @@ function convertStealModule(file, text) {
   return invocations.reduce(function(acc, invocation) {
     var source = invocation.callback.toString(),
         requires = generateRequires(invocation.deps, stealconfig);
-    return acc+",("+source+")("+requires.join(",")+")";
-  }, "module.exports = {}")+";";
+    return acc+",(("+source+")("+requires.join(",")+"))";
+  }, "module.exports = ({}")+");";
 
   function steal() {
     var cb = (typeof arguments[arguments.length-1] === "function" &&
